@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-
+import PropTypes from "prop-types"
 const StyledFormRow = styled.div`
   display: grid;
   align-items: center;
@@ -45,6 +45,13 @@ const Error = styled.span`
   font-size: 1.4rem;
   color: var(--color-red-700);
 `;
+
+FormRow.propTypes = {
+  label:PropTypes.string,
+  error:PropTypes.string,
+  children:PropTypes.node,
+  orientation:PropTypes.string
+}
 
 function FormRow({ label, error, children, orientation }) {
   return (

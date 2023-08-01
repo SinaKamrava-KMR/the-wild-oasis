@@ -5,28 +5,20 @@ import FileInput from "../../ui/FileInput";
 import { Textarea } from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import PropTypes from "prop-types";
+import { createEditCabin } from "../../services/apiCabins";
 import { toast } from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
-import { createEditCabin } from "../../services/apiCabins";
-CreateCabinForm.proptypes = {
-  cabinToEdit: PropTypes.object,
-};
 
-function CreateCabinForm({ cabinToEdit = {} }) {
-  const { id: editId, ...editValue } = cabinToEdit;
-  const isEditedSession = Boolean(editId);
+function CreateCabinForm() {
   const {
     register,
     handleSubmit,
     reset,
     getValues,
     formState: { errors },
-  } = useForm({
-    defaultValues: isEditedSession ? editValue : {},
-  });
+  } = useForm();
   const queryClient = useQueryClient();
-  const { mutate: createCabin, isLoading: isCreating } = useMutation({
+  const { mutate, isLoading: isCreating } = useMutation({
     mutationFn: createEditCabin,
     onSuccess: () => {
       toast.success("New cabin successfully created");
@@ -39,31 +31,10 @@ function CreateCabinForm({ cabinToEdit = {} }) {
       toast.error(err.message);
     },
   });
-  const { mutate: editCabin, isLoading: isEditing } = useMutation({
-    mutationFn: ({ newCabinData, id }) => createEditCabin(newCabinData, id),
-    onSuccess: () => {
-      toast.success("Cabin successfully edited");
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      reset();
-      
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
-
-  const isWorking = isCreating || isEditing;
 
   function onSubmit(data) {
     // console.log(data);
-    const image = typeof data.image === "string" ? data.image : data.image[0];
-    if (isEditedSession) {
-      editCabin({ newCabinData: { ...data, image }, id: editId });
-    } else {
-      createCabin({ ...data, image });
-    }
+    mutate({ ...data, image: data.image[0] });
   }
 
   return (
@@ -139,7 +110,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
           id="image"
           accept="image/*"
           {...register("image", {
-            required: isEditedSession ? false : "This fileds is required",
+            required: "This fileds is required",
           })}
         />
       </FormRow>
@@ -149,9 +120,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button disabled={isWorking}>
-          {isEditedSession ? "Edit cabin" : "Create new cabin"}
-        </Button>
+        <Button disabled={isCreating}>Add cabin</Button>
       </FormRow>
     </Form>
   );

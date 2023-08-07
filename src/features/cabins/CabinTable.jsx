@@ -20,7 +20,7 @@ const TableHeader = styled.header`
   align-items: center;
 
   background-color: var(--color-grey-50);
-  border-bottom: 1px solid var(--color-grey-100);
+  border-bottom: 1px solid var(--color-grey-200);
   text-transform: uppercase;
   letter-spacing: 0.4px;
   font-weight: 600;
@@ -39,12 +39,12 @@ function CabinTable() {
   return (
     <Table role="table">
       <TableHeader role="row">
-        <div></div>
-        <div>Cabins</div>
+        <div>Row</div>
+        <div>Cabin</div>
         <div>Capacity</div>
         <div>Price</div>
         <div>Discount</div>
-        <div></div>
+        <div>Actions</div>
       </TableHeader>
 
       {cabins.map((cabin) => (
